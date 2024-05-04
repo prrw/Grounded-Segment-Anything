@@ -6,7 +6,7 @@
 NVCC := $(shell which nvcc)
 ifeq ($(NVCC),)
 	# NVCC not found
-	USE_CUDA := 0
+	USE_CUDA := 1
 	NVCC_VERSION := "not installed"
 else
 	NVCC_VERSION := $(shell nvcc --version | grep -oP 'release \K[0-9.]+')
@@ -15,7 +15,7 @@ endif
 
 # Add the list of supported ARCHs
 ifeq ($(USE_CUDA), 1)
-	TORCH_CUDA_ARCH_LIST := "3.5;5.0;6.0;6.1;7.0;7.5;8.0;8.6+PTX"
+	TORCH_CUDA_ARCH_LIST := "6.0;6.1;7.0;7.5;8.0;8.6+PTX;8.9;9.0"
 	BUILD_MESSAGE := "I will try to build the image with CUDA support"
 else
 	TORCH_CUDA_ARCH_LIST :=
@@ -37,7 +37,6 @@ ifeq (,$(wildcard ./groundingdino_swint_ogc.pth))
 endif
 	docker run --gpus all -it --rm --net=host --privileged \
 	-v /tmp/.X11-unix:/tmp/.X11-unix \
-	-v "${PWD}":/home/appuser/Grounded-Segment-Anything \
 	-e DISPLAY=$DISPLAY \
 	--name=gsa \
 	--ipc=host -it gsa:v0
