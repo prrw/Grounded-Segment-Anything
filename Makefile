@@ -24,19 +24,19 @@ endif
 
 
 build-image:
-	@echo $(BUILD_MESSAGE)
-	docker build --build-arg USE_CUDA=$(USE_CUDA) \
-	--build-arg TORCH_ARCH=$(TORCH_CUDA_ARCH_LIST) \
-	-t gsa:v0 .
-run:
 ifeq (,$(wildcard ./sam_vit_h_4b8939.pth))
 	wget https://dl.fbaipublicfiles.com/segment_anything/sam_vit_h_4b8939.pth
 endif
 ifeq (,$(wildcard ./groundingdino_swint_ogc.pth))
 	wget https://github.com/IDEA-Research/GroundingDINO/releases/download/v0.1.0-alpha/groundingdino_swint_ogc.pth
 endif
-	docker run --gpus all -it -d --net=host --privileged \
+	@echo $(BUILD_MESSAGE)
+	docker build --build-arg USE_CUDA=$(USE_CUDA) \
+	--build-arg TORCH_ARCH=$(TORCH_CUDA_ARCH_LIST) \
+	-t gsa:v0 .
+run:
+	docker run --gpus all -it -p 7589:7589 -d \
 	-v /tmp/.X11-unix:/tmp/.X11-unix \
 	-e DISPLAY=$DISPLAY \
 	--name=gsa \
-	--ipc=host gsa:v0
+	gsa:v0
